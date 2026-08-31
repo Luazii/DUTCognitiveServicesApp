@@ -1,0 +1,173 @@
+@model DUTCognitiveServicesApp.Models.ViewModels.ImageDetailsViewModel
+@{
+    ViewData["Title"] = "Analysis Results";
+    var result = Model.Result;
+    var confidencePct = (int)(result.CaptionConfidence * 100);
+}
+
+<div class="results-header">
+    <a asp-controller="Home" asp-action="Index" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Back to Upload
+    </a>
+    <div class="header-tags">
+        <!-- Cache Status Badge (Rubric 5) -->
+        @if (result.IsFromCache)
+        {
+            <span class="badge-cache hit" title="This result was retrieved in @(result.ExecutionTimeMs)ms directly from memory cache without repeating AI API calls.">
+                <i class="fa-solid fa-bolt"></i> CACHE HIT (@(result.ExecutionTimeMs)ms)
+            </span>
+        }
+        else
+        {
+            <span class="badge-cache miss" title="Fresh API call made to Microsoft Cognitive Services. Result has been cached for subsequent queries.">
+                <i class="fa-solid fa-cloud-arrow-down"></i> CACHE MISS (Fresh AI Call &bull; @(result.ExecutionTimeMs)ms)
+            </span>
+        }
+        <span class="badge-provider">
+            <i class="fa-solid fa-microchip"></i> @result.SourceProvider
+        </span>
+    </div>
+</div>
+
+<div class="results-grid">
+    <!-- Left Column: Image Preview & Storage Details (Rubric 1, 3, 6) -->
+    <div class="results-col-media">
+        <div class="card media-card">
+            <div class="image-viewer-container">
+                <img src="@result.BlobUrl" alt="@result.Caption" class="main-result-image" />
+            </div>
+
+            <div class="card-section storage-meta">
+                <h4 class="meta-section-title"><i class="fa-solid fa-cloud"></i> Azure Blob Storage Details</h4>
+                <div class="meta-row">
+                    <span class="meta-label">Blob File Name:</span>
+                    <span class="meta-value font-mono">@result.BlobName</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Storage URL:</span>
+                    <a href="@result.BlobUrl" target="_blank" class="meta-value link-accent font-mono text-truncate">
+                        @result.BlobUrl <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">File Size:</span>
+                    <span class="meta-value">@result.FormattedFileSize</span>
+                </div>
+                @if (result.Width > 0 && result.Height > 0)
+                {
+                    <div class="meta-row">
+                        <span class="meta-label">Dimensions:</span>
+                        <span class="meta-value">@(result.Width) &times; @(result.Height) px (@result.Format)</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: AI Analysis & Description (Rubric 4.1, 4.2, 5, 6) -->
+    <div class="results-col-analysis">
+        <!-- Main AI Description / Caption Card (Rubric 4.2) -->
+        <div class="card caption-card">
+            <div class="card-header-clean">
+                <span class="caption-lead"><i class="fa-solid fa-robot"></i> AI Generated Description</span>
+                <div class="confidence-indicator" title="Cognitive Services Confidence Score">
+                    <span class="confidence-label">Confidence:</span>
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-bar-fill" style="width: @(confidencePct)%"></div>
+                    </div>
+                    <span class="confidence-val">@(confidencePct)%</span>
+                </div>
+            </div>
+
+            <div class="caption-text-box">
+                <p class="caption-text">"@result.Caption"</p>
+            </div>
+        </div>
+
+        <!-- Detected Tags (Rubric 6) -->
+        <div class="card">
+            <div class="card-header-clean">
+                <h3 class="card-title-sm"><i class="fa-solid fa-tags"></i> Detected Visual Tags</h3>
+                <span class="badge-count">@result.Tags.Count tags</span>
+            </div>
+
+            @if (result.Tags.Any())
+            {
+                <div class="tags-container">
+                    @foreach (var tag in result.Tags)
+                    {
+                        <div class="tag-pill">
+                            <span class="tag-name">@tag.Name</span>
+                            <span class="tag-conf">@tag.ConfidencePercent</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No specific visual tags were returned for this image.</p>
+            }
+        </div>
+
+        <!-- Dense Captions / Objects Detected -->
+        @if (result.DenseCaptions.Count > 1 || result.ObjectsDetected.Any())
+        {
+            <div class="card">
+                <div class="card-header-clean">
+                    <h3 class="card-title-sm"><i class="fa-solid fa-layer-group"></i> Detailed Observations</h3>
+                </div>
+
+                @if (result.DenseCaptions.Count > 1)
+                {
+                    <div class="dense-captions-list">
+                        <h5 class="sub-heading">Dense Region Captions:</h5>
+                        <ul>
+                            @foreach (var dense in result.DenseCaptions)
+                            {
+                                <li><i class="fa-solid fa-angle-right"></i> @dense</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (result.ObjectsDetected.Any())
+                {
+                    <div class="objects-list">
+                        <h5 class="sub-heading">Objects Detected:</h5>
+                        <div class="object-badges">
+                            @foreach (var obj in result.ObjectsDetected.Distinct())
+                            {
+                                <span class="object-badge"><i class="fa-solid fa-cube"></i> @obj</span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Performance & Caching Diagnostic Card (Rubric 5) -->
+        <div class="card cache-details-card">
+            <div class="card-header-clean">
+                <h3 class="card-title-sm"><i class="fa-solid fa-clock-rotate-left"></i> Performance &amp; Caching Telemetry</h3>
+            </div>
+            <div class="telemetry-grid">
+                <div class="telemetry-item">
+                    <span class="telemetry-label">Response Time:</span>
+                    <span class="telemetry-value font-mono">@(result.ExecutionTimeMs) ms</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="telemetry-label">Cache Key:</span>
+                    <span class="telemetry-value font-mono text-truncate">@result.CacheKey</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="telemetry-label">Cached At:</span>
+                    <span class="telemetry-value">@(result.CachedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss") ?? "Just now")</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="telemetry-label">Expires:</span>
+                    <span class="telemetry-value">@(result.ExpiresAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss") ?? "In 30 mins")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

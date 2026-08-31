@@ -1,0 +1,53 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/images/samples/car.jpg",
+      "PackagePath": "staticwebassets/images/samples/car.jpg"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/images/samples/city.jpg",
+      "PackagePath": "staticwebassets/images/samples/city.jpg"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/images/samples/dog.jpg",
+      "PackagePath": "staticwebassets/images/samples/dog.jpg"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/images/samples/nature.jpg",
+      "PackagePath": "staticwebassets/images/samples/nature.jpg"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/js/site.js",
+      "PackagePath": "staticwebassets/js/site.js"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/uploads/2e06c15aaa4846869653b48b8ef04c55_cloudy convo.png",
+      "PackagePath": "staticwebassets/uploads/2e06c15aaa4846869653b48b8ef04c55_cloudy convo.png"
+    },
+    {
+      "Id": "/Users/luazii/projects/DUTCognitiveServicesApp/wwwroot/uploads/99fcccadad824df1999c5c4921792487_dog.jpg",
+      "PackagePath": "staticwebassets/uploads/99fcccadad824df1999c5c4921792487_dog.jpg"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.DUTCognitiveServicesApp.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.DUTCognitiveServicesApp.props",
+      "PackagePath": "build\\DUTCognitiveServicesApp.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.DUTCognitiveServicesApp.props",
+      "PackagePath": "buildMultiTargeting\\DUTCognitiveServicesApp.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.DUTCognitiveServicesApp.props",
+      "PackagePath": "buildTransitive\\DUTCognitiveServicesApp.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

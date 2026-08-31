@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DUT Microsoft Cognitive Services</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="app-header">
+        <div class="nav-container">
+            <a asp-controller="Home" asp-action="Index" class="brand-logo">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">DUT Cognitive AI</span>
+                    <span class="brand-subtitle">Computer Vision &amp; Blob Storage</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a asp-controller="Home" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Analyze Image
+                </a>
+                <a asp-controller="Home" asp-action="Gallery" class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Gallery" ? "active" : "")">
+                    <i class="fa-solid fa-database"></i> Blob Storage Gallery
+                </a>
+            </nav>
+
+            <div class="nav-actions">
+                <form asp-controller="Home" asp-action="ClearCache" method="post" class="clear-cache-form" title="Clear In-Memory Cache">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-clear-cache">
+                        <i class="fa-solid fa-rotate-right"></i> Reset Cache
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main role="main" class="main-content">
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>@TempData["StatusMessage"]</span>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>@TempData["ErrorMessage"]</span>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <p><strong>Durban University of Technology (DUT)</strong> &bull; Faculty of Accounting and Informatics</p>
+                <p class="text-muted">Assignment Two: Utilising Microsoft Cognitive Services (.NET Core)</p>
+            </div>
+            <div class="footer-right">
+                <div class="status-pill">
+                    <span class="pulse-dot"></span> Azure Computer Vision &amp; Blob Storage Ready
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

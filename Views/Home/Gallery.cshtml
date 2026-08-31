@@ -1,0 +1,70 @@
+@model DUTCognitiveServicesApp.Models.ViewModels.GalleryViewModel
+@{
+    ViewData["Title"] = "Blob Storage Gallery";
+}
+
+<div class="gallery-page-header">
+    <div>
+        <h1 class="page-title"><i class="fa-solid fa-database"></i> Azure Blob Storage Gallery</h1>
+        <p class="text-muted">Browse all images uploaded and stored in your Azure Blob Storage container.</p>
+    </div>
+    <a asp-controller="Home" asp-action="Index" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> Upload New Image
+    </a>
+</div>
+
+@if (Model.Blobs.Any())
+{
+    <div class="gallery-stats-bar">
+        <span><i class="fa-solid fa-images"></i> Total Blobs: <strong>@Model.TotalCount</strong></span>
+    </div>
+
+    <div class="gallery-grid">
+        @foreach (var blob in Model.Blobs)
+        {
+            <div class="gallery-card">
+                <div class="gallery-thumb-wrap">
+                    <img src="@blob.Url" alt="@blob.Name" loading="lazy" />
+                    @if (blob.HasCachedAnalysis)
+                    {
+                        <span class="gallery-cached-badge" title="AI Analysis is cached in memory">
+                            <i class="fa-solid fa-bolt"></i> Cached
+                        </span>
+                    }
+                </div>
+                <div class="gallery-body">
+                    <h4 class="gallery-blob-name font-mono text-truncate" title="@blob.Name">@blob.Name</h4>
+                    @if (!string.IsNullOrEmpty(blob.CachedCaption))
+                    {
+                        <p class="gallery-caption text-truncate">"@blob.CachedCaption"</p>
+                    }
+                    <div class="gallery-meta">
+                        <span><i class="fa-solid fa-file-lines"></i> @(blob.SizeBytes / 1024) KB</span>
+                        <span><i class="fa-solid fa-clock"></i> @(blob.CreatedOn?.ToLocalTime().ToString("MMM dd, HH:mm") ?? "Recent")</span>
+                    </div>
+                    <div class="gallery-actions">
+                        <a href="@blob.Url" target="_blank" class="btn-sm-outline">
+                            <i class="fa-solid fa-up-right-from-square"></i> Open Blob
+                        </a>
+                        <a asp-controller="Home" asp-action="Details" asp-route-blobName="@blob.Name" class="btn-sm-primary">
+                            <i class="fa-solid fa-magnifying-glass-chart"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-state card">
+        <div class="empty-icon">
+            <i class="fa-regular fa-images"></i>
+        </div>
+        <h3>No Blobs Found in Storage</h3>
+        <p class="text-muted">You haven't uploaded any photos to Azure Blob Storage yet.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn-primary">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Your First Image
+        </a>
+    </div>
+}

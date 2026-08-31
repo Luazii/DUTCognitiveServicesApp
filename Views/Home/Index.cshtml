@@ -1,0 +1,122 @@
+@model DUTCognitiveServicesApp.Models.ViewModels.ImageUploadViewModel
+@{
+    ViewData["Title"] = "Upload & Analyze Image";
+    bool isBlobConfigured = ViewBag.IsBlobConfigured ?? false;
+    bool isVisionConfigured = ViewBag.IsVisionConfigured ?? false;
+    int cachedCount = ViewBag.CachedItemsCount ?? 0;
+}
+
+<div class="hero-section">
+    <div class="hero-content">
+        <span class="hero-badge">
+            <i class="fa-solid fa-sparkles"></i> Microsoft Azure AI Cognitive Services
+        </span>
+        <h1 class="hero-title">Image Analysis &amp; Captioning</h1>
+        <p class="hero-subtitle">
+            Upload an image to store it in Azure Blob Storage, analyze visual contents with Computer Vision AI, and inspect AI descriptions and tags with intelligent caching.
+        </p>
+
+        <!-- System Diagnostics Badges -->
+        <div class="diagnostics-bar">
+            <div class="diag-item @(isBlobConfigured ? "configured" : "fallback")">
+                <i class="fa-solid fa-hard-drive"></i>
+                <span>Blob Storage: <strong>@(isBlobConfigured ? "Azure Cloud Blob" : "Local Emulation")</strong></span>
+            </div>
+            <div class="diag-item @(isVisionConfigured ? "configured" : "fallback")">
+                <i class="fa-solid fa-microchip"></i>
+                <span>AI Vision: <strong>@(isVisionConfigured ? "Azure Cognitive API" : "Simulated Engine")</strong></span>
+            </div>
+            <div class="diag-item cached">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Cached Results: <strong>@cachedCount items</strong></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="upload-container">
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>@Model.ErrorMessage</span>
+        </div>
+    }
+
+    <!-- Upload Card Form (Rubric 1 & 2) -->
+    <div class="card upload-card">
+        <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo for AI Analysis</h2>
+            <p class="card-desc">Select an image from your computer to analyze and generate textual descriptions.</p>
+        </div>
+
+        <form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Drag & Drop / File Browser Area -->
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-prompt" id="dropZonePrompt">
+                    <div class="drop-icon">
+                        <i class="fa-solid fa-images"></i>
+                    </div>
+                    <h4>Drag and drop your photo here</h4>
+                    <p class="text-muted">or click to browse from your computer</p>
+                    <span class="file-limits">Supports JPG, PNG, WEBP, BMP (Max 10MB)</span>
+                </div>
+
+                <div class="preview-container" id="previewContainer" style="display: none;">
+                    <img id="imagePreview" src="#" alt="Selected Image Preview" class="preview-image" />
+                    <div class="preview-details">
+                        <span id="previewFileName" class="preview-name">filename.jpg</span>
+                        <span id="previewFileSize" class="preview-size">0 KB</span>
+                        <button type="button" id="btnRemoveImage" class="btn-remove">
+                            <i class="fa-solid fa-xmark"></i> Remove
+                        </button>
+                    </div>
+                </div>
+
+                <input asp-for="ImageFile" type="file" id="fileInput" class="file-input" accept="image/*" />
+            </div>
+            <span asp-validation-for="ImageFile" class="text-danger field-error"></span>
+
+            <div class="form-actions">
+                <button type="submit" id="btnSubmit" class="btn-primary btn-large">
+                    <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Store &amp; Analyze with AI</span>
+                    <span class="spinner" style="display: none;"><i class="fa-solid fa-spinner fa-spin"></i> Processing with Azure AI...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Rubric 7: Preset Demonstration Sample Images -->
+    <div class="samples-section">
+        <div class="section-title-wrap">
+            <h3><i class="fa-solid fa-vial-circle-check"></i> One-Click Demo Samples</h3>
+            <p class="text-muted">Test immediate functionality without having to search for sample pictures.</p>
+        </div>
+
+        <div class="samples-grid">
+            @foreach (var sample in Model.SampleImages)
+            {
+                <div class="sample-card">
+                    <div class="sample-img-wrap">
+                        <img src="~/images/samples/@sample.RelativePath" alt="@sample.Title" loading="lazy" />
+                        <span class="sample-badge">@sample.Category</span>
+                    </div>
+                    <div class="sample-body">
+                        <h4>@sample.Title</h4>
+                        <p class="sample-desc">@sample.Description</p>
+                        <form asp-controller="Home" asp-action="AnalyzeSample" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="sampleFileName" value="@sample.RelativePath" />
+                            <button type="submit" class="btn-sample">
+                                <i class="fa-solid fa-play"></i> Analyze Sample
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
